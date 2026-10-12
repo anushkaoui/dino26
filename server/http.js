@@ -65,7 +65,14 @@ export function createApp({ service: defaultService, storeForRequest, adminKey, 
         res.writeHead(200, { 'Content-Type': `${type}; charset=utf-8` }); res.end(data); return;
       }
       requireThat(path.startsWith('/api/'), 404, 'NOT_FOUND', 'Page was not found.');
-      if (req.headers.origin) requireThat(req.headers.origin === origin, 403, 'BAD_REQUEST_ORIGIN', 'Use the game website to make requests.');
+      if (req.headers.origin) {
+        const h = req.headers['x-forwarded-host'] || req.headers.host;
+        const p = req.headers['x-forwarded-proto'] || 'http';
+        const ok = req.headers.origin === origin ||
+          (h && (req.headers.origin === `${p}://${h}` || req.headers.origin === `https://${h}` || req.headers.origin === `http://${h}`)) ||
+          /^https:\/\/[a-z0-9-]+\.trycloudflare\.com$/.test(req.headers.origin);
+        requireThat(ok, 403, 'BAD_REQUEST_ORIGIN', 'Use the game website to make requests.');
+      }
       if (req.method === 'GET' && path === '/api/admin/session') {
         const local = localOrganizerAccess && !production && ['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(req.socket.remoteAddress);
         if (local) setOrganizer();
@@ -95,7 +102,10 @@ export function createApp({ service: defaultService, storeForRequest, adminKey, 
       const data = req.method === 'POST' ? await body(req) : null;
       const store = await storeForRequest(req);
       if (req.method === 'GET' && path === '/api/event') return json(200, service.publicEvent(await service.event(store)));
-      if (req.method === 'GET' && path === '/api/leaderboard') return json(200, await service.leaderboard(store));
+      if (req.method === 'GET' && path === '/api/leaderboard') {
+        res.setHeader('Cache-Control', 'public, max-age=2, stale-while-revalidate=1');
+        return json(200, await service.leaderboard(store));
+      }
       if (req.method === 'GET' && path === '/api/health') {
         await store.get('DinoEvents', service.eventKey);
         return json(200, { ok: true, mode: production ? 'catalyst' : 'local', engineVersion: 1 });

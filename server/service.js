@@ -161,7 +161,7 @@ export class GameService {
     let last = start, same = new Set();
     for (const pair of inputs) {
       requireThat(Array.isArray(pair) && pair.length === 2 && Number.isInteger(pair[0]) &&
-        pair[0] >= last && pair[0] < end && Number.isInteger(pair[1]) && pair[1] >= 1 && pair[1] <= 4,
+        pair[0] >= last && pair[0] < end && Number.isInteger(pair[1]) && pair[1] >= 1 && pair[1] <= 30,
       400, 'BAD_INPUT', 'Gameplay inputs are invalid or out of order.');
       if (pair[0] !== last) same.clear();
       requireThat(!same.has(pair[1]), 400, 'BAD_INPUT', 'Duplicate action in the same frame.');

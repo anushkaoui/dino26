@@ -38,7 +38,7 @@ test('scores come from replay; score fields, accelerated, stale and malformed su
   await assert.rejects(f.service.checkpoint(f.store, f.entry, request), e => e.code === 'TOO_EARLY');
   f.time(132100);
   await assert.rejects(f.service.checkpoint(f.store, f.entry, { ...request, score: 999999 }), e => e.code === 'BAD_BODY');
-  for (const inputs of [[[0, 9]], [[12, 1], [1, 1]], [[-1, 1]], [[120, 1]], [[0, 1], [0, 1]]])
+  for (const inputs of [[[0, 99]], [[12, 1], [1, 1]], [[-1, 1]], [[120, 1]], [[0, 1], [0, 1]]])
     await assert.rejects(f.service.checkpoint(f.store, f.entry, { ...request, inputs }), e => e.code === 'BAD_INPUT');
   const result = await f.service.checkpoint(f.store, f.entry, request);
   assert.deepEqual(result.state, replay(initialState(), 120, request.inputs, result.seed));
