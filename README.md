@@ -77,5 +77,5 @@ Local backend checks pass, including real HTTP, 500-entry exports and forced pro
 The Catalyst adapter and deployment build are implemented, but no real Catalyst account has been connected, deployed or load-tested. Browser testing is left to you as requested. See [Deployment guide](docs/DEPLOYMENT.md), [Event operations](docs/OPERATIONS.md), and [Credit research](docs/CREDITS.md).
 # GitHub deployment
 
-Use [GitHub → Catalyst Pipelines setup](docs/GITHUB-DEPLOYMENT.md) to build, test and redeploy this AppSail app on pushes to `main`. The pipeline deploys code to Development; Production promotion remains a console step. Data Store records and runtime secrets stay in the existing Catalyst project.
+Keep the source on GitHub and use [manual Catalyst deployment](docs/GITHUB-DEPLOYMENT.md) to upload a fresh AppSail build ZIP after changes. No pipeline, deployment token or Docker setup is required. Catalyst's legacy Git Deploy/Sync is documented for Functions and Web Client Hosting; this app uses AppSail. Deploy updates to the existing service and retain its Data Store records and runtime secrets.
 # dino_game

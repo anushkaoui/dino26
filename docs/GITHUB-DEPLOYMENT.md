@@ -1,62 +1,55 @@
-# GitHub → Catalyst Pipelines → AppSail
+# GitHub source and manual AppSail deployment
 
-This repository includes `catalyst-pipelines.yaml`. Pushes or merges to `main` trigger install, all backend tests, packaging and an AppSail DEVELOPMENT deployment in that order. A failed test prevents deployment. Catalyst's CLI deploys resources to Development; publishing to Production requires promotion in the console. This is not fully automatic Production deployment.
+Keep the source in GitHub. Deploy the app manually by uploading a runtime ZIP to the same Catalyst AppSail service after changes. This process requires no pipeline, Catalyst deployment token, global CLI installation or Docker setup.
 
-No Git repository exists in this directory yet. No GitHub repository was created, pushed, connected or deployed by the agent. Create an empty private GitHub repository with no initial README, license or `.gitignore`.
+## Stop the previous automation
 
-## Push the source
+Disable the Git push trigger on the Catalyst Pipeline you already created, or remove that pipeline connection. Keep the Catalyst project and its tables. The newly prepared GitHub Actions workflow has been removed locally. If you already uploaded that workflow to GitHub, commit its deletion or disable it in GitHub Actions as well.
 
-From the project directory, run these commands, replacing the GitHub URL:
+The root `catalyst-pipelines.yaml` is retained only as a legacy alternative; it is unused by this manual process.
 
-```sh
-git init -b main
-git add .
-git status --short
-git commit -m "Add GDG Dino game and Catalyst pipeline"
-git remote add origin https://github.com/YOUR-USERNAME/YOUR-REPOSITORY.git
-git push -u origin main
-```
+## GitHub integration limitations
 
-Before committing, confirm `.env`, `node_modules`, `data`, `build`, `exports` and `reports` are absent from the staged files. They are ignored. Keep the source, package lock, tests, deployment scripts and root pipeline YAML in Git. Use GitHub's normal authentication; do not put access tokens in the remote URL. If pushing is rejected because the remote already contains files, stop and reconcile the histories; do not force-push.
+To link your account, open Catalyst **Settings → General Settings → Integrations → GitHub → Add Account**, if available, and authorize GitHub. The legacy deployment integration is documented for Functions and Web Client Hosting, requires a standard Catalyst project directory with `catalyst.json`, and is restricted to accounts active before July 2024 or accounts that already integrated repositories.
 
-## One-time Catalyst setup
+This repository is a Node.js AppSail service. Connecting GitHub alone does not establish a verified deployment path for it, and legacy Deploy/Sync should not be treated as an AppSail update. Keep the existing architecture and use the build upload below. Do not add a dummy `catalyst.json` to make the repository appear compatible.
 
-1. Open the project created by the successful schema IaC import. Verify the three tables exist. Do not rerun an IaC import on each release: it creates another project.
-2. Create the AppSail service once using the console upload instructions. Name it `gdg-dino` (or record the actual existing service name), choose Node.js 22, startup `node server/main.js`, and initial memory 512 MB. The pipeline deploys to this same service name in this same project. Configure `STORE_MODE=catalyst`, `EVENT_ID=gdg-qualifier`, the exact `APP_ORIGIN`, `SESSION_SECRET`, `ADMIN_KEY`, and `ORGANIZER_PASSWORD` in AppSail. Keep secrets private and stable. AppSail runtime variables are separate from pipeline variables.
-3. Install the pinned CLI locally and generate a token for the India account:
+## After each code change
+
+Push the source to GitHub normally. From the current project checkout, build and create the upload ZIP:
 
 ```sh
-npm install -g zcatalyst-cli@1.28.0
-catalyst login --dc in
-catalyst token:generate --dc in
+npm ci
+npm run build
+rm -f gdg-dino-appsail.zip
+(cd build && zip -qr ../gdg-dino-appsail.zip .)
 ```
 
-Complete Zoho's verification in your browser. Save the resulting token as a secret, not in source control. Revoke and replace it if exposed or expired.
+The ZIP must have `package.json`, `server/`, `shared/`, `public/` and `node_modules/` at its root, without an outer `build/` directory. The build allowlist excludes local `.env`, score journals, exports and reports. Do not upload a GitHub source-download ZIP, the schema ZIP, or the old project IaC ZIP as the app build.
 
-4. In the Catalyst console, open **Pipelines → Create Pipeline**. Name it `gdg-dino-main`, choose **GitHub**, add your account, select the owner and repository, then Continue. Use the existing `catalyst-pipelines.yaml` on `main`; do not replace it with an unrelated template.
-5. Under **Global Variables**, add:
+1. Open the existing imported Catalyst project in **Development**.
+2. Go to **Serverless → AppSail → your existing service → Deployments → Create Deployment**. If no service exists yet, choose **AppSail → Deploy from Console** and create it once, e.g. `gdg-dino`.
+3. Choose **Catalyst-Managed Runtime**, upload `gdg-dino-appsail.zip`, select **Node.js 22**, and set startup command to **`node server/main.js`**. Start with 512 MB memory.
+4. Retain the runtime variables listed below and click **Deploy**. Open `/api/health` on the resulting app URL; it should return `ok: true` and `mode: catalyst`.
+5. To release the public event site, go to **Settings → Project Settings → Environments → Deployments** and promote the AppSail code to Production. Review the deployment selection so a routine release does not copy practice database rows over Production data. Initial Production activation is a separate setup step.
+6. Check the Production health URL and manually test a separate practice room.
+
+Keep these variables configured in AppSail, separately for Development and Production:
 
 | Variable | Value |
 | --- | --- |
-| CATALYST_TOKEN | Secret token generated above |
-| CATALYST_PROJECT_ID | Numeric ID of the IMPORTED project |
-| CATALYST_ORG_ID | Numeric Catalyst organization ID |
-| CATALYST_APP_NAME | Exact existing AppSail name, e.g. gdg-dino |
-| DOCKER_USERNAME | Docker Hub username for runner image pulls |
-| DOCKER_TOKEN | Secret Docker Hub access token with read access |
+| STORE_MODE | catalyst |
+| EVENT_ID | gdg-qualifier |
+| APP_ORIGIN | That environment's exact HTTPS app origin, no trailing slash |
+| SESSION_SECRET | Stable random secret, at least 32 characters |
+| ADMIN_KEY | Different stable random secret, at least 32 characters |
+| ORGANIZER_PASSWORD | Private organizer password, at least 12 characters |
 
-Use the console's secret/protected setting where available. The Docker credentials authenticate pulling the Node.js runner image; they are not installed into the game. Find the project ID in Project Settings/General or the project's console URL, and the organization ID in your Catalyst organization details. Do not substitute the app's ZAID or subscription ID. All targets are explicit; no old project IDs from screenshots are hardcoded.
+Use the same project and service. Retain the session secret across releases. Never rerun the schema import to update code. Uploading the app build does not include database records or schema operations.
 
-6. Save/commit the pipeline configuration through Catalyst. If Catalyst commits a change, run `git pull --ff-only` before your next push. Its Git integration triggers runs on push/merge; the YAML restricts execution to `refs/heads/main`.
-7. Check **Execution History**: install, tests, build and deploy must all succeed. Open the DEVELOPMENT `/api/health`; expect `ok: true` and `mode: catalyst`. Verify the development AppSail origin matches its `APP_ORIGIN`.
+Do not release during a live prize round. Persisted inputs are replayed using `shared/engine.js`; keep its rules/version compatible with retained records. Export Final CSV and Full audit JSONL after each room freezes.
 
-## Release to Production
-
-After a successful pipeline run, go to **Settings → Project Settings → Environments → Deployments** and promote Development to Production. First activation requires payment setup and migrates all configured components/data. On subsequent releases, select the AppSail code change and review the deployment diff. Do not overwrite Production database rows with development practice records or introduce schema changes as part of a routine code release.
-
-Set the Production AppSail variables separately, especially its HTTPS `APP_ORIGIN`. Check the Production health URL and manually test a separate practice room before the prize event. The pipeline updates Development automatically; the Production URL changes only after successful promotion.
-
-Do not release during a live prize round. Persisted inputs are replayed using `shared/engine.js`; keep its rules/version compatible with retained records. Rule changes require an intentional version/migration strategy, not replacing the engine mid-round. Redeploying code in the existing project/service does not import, truncate or delete Data Store rows. Keep `SESSION_SECRET` and the public origin stable to preserve sessions.
+The agent has prepared the local build workflow; it has not connected an account or deployed this app to Catalyst.
 
 ## Record limits and persistence checks
 
@@ -68,8 +61,7 @@ No release step recreates schema, deletes scores, rotates keys, or copies local 
 
 Sources:
 
-- https://docs.catalyst.zoho.com/en/pipelines/help/pipelines/create-a-pipeline/
-- https://docs.catalyst.zoho.com/en/pipelines/help/triggers/introduction/
-- https://docs.catalyst.zoho.com/en/pipelines/help/deployments/deploy-to-appsail/
-- https://docs.catalyst.zoho.com/en/cli/v1/deploy-resources/introduction/
-- https://docs.catalyst.zoho.com/en/pipelines/help/catalyst-pipelines.yaml/build-the-pipeline/variables/
+- [GitHub integration scope and availability](https://docs.catalyst.zoho.com/en/devops/help/github-integration/introduction/)
+- [GitHub account linking and legacy Deploy/Sync](https://docs.catalyst.zoho.com/en/devops/help/github-integration/implementation/)
+- [AppSail console upload](https://docs.catalyst.zoho.com/en/serverless/help/appsail/catalyst-managed-runtimes/deploy-from-console/)
+- [New deployment on an existing AppSail service](https://docs.catalyst.zoho.com/en/serverless/help/appsail/console/deployments/)

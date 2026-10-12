@@ -1,4 +1,5 @@
-# Connect this file through Catalyst Pipelines to the GitHub main branch.
+# Optional legacy Catalyst Pipelines configuration, unused by the manual upload flow.
+# Disable its Git trigger in Catalyst before continuing with manual deployments.
 # The official CLI deploys AppSail to DEVELOPMENT. Promote separately to Production.
 version: 1
 pipeline-when:

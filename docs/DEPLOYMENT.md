@@ -2,7 +2,7 @@
 
 This app targets one AppSail Node.js 22 service serving both static files and the API, backed by Catalyst Data Store. Use production for the actual event. No deployment or provider spending has been performed by this agent.
 
-For automatic deployment from GitHub, follow [GitHub deployment](GITHUB-DEPLOYMENT.md). It uses Catalyst Pipelines and the existing imported project/service. CLI deployments update Development; promote code to Production separately. Configure runtime variables in Catalyst.
+Keep the source on GitHub and follow [manual deployment](GITHUB-DEPLOYMENT.md) to upload a runtime ZIP through AppSail's console after changes. No pipeline, deployment token or Docker setup is required. Use the existing imported project/service and configure runtime variables in Catalyst.
 
 ## 1. Create the Data Store schema
 

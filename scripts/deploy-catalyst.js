@@ -10,7 +10,7 @@ export function deployArgs(env) {
     throw new Error('Set numeric CATALYST_PROJECT_ID and CATALYST_ORG_ID for the imported project.');
   if (!/^[A-Za-z0-9][A-Za-z0-9-]{0,49}$/.test(name || ''))
     throw new Error('Set CATALYST_APP_NAME to the EXISTING AppSail service name.');
-  if (!env.CATALYST_TOKEN) throw new Error('Set CATALYST_TOKEN as a secret pipeline variable.');
+  if (!env.CATALYST_TOKEN) throw new Error('Set CATALYST_TOKEN as a private deployment environment variable.');
   if (env.CATALYST_DC && env.CATALYST_DC !== 'in') throw new Error('This deployment targets the India data center.');
   return ['deploy', 'appsail', '--name', name, '--build-path', resolve('build'), '--stack', 'node22',
     '--command', 'node server/main.js', '--project', project, '--org', org, '--dc', 'in'];
