@@ -12,7 +12,8 @@
     "test": "node --test --test-concurrency=1 test/*.test.js",
     "load": "node scripts/load.js",
     "export": "node scripts/export.js",
-    "build": "node scripts/package.js"
+    "build": "node scripts/package.js",
+    "build:slate": "node scripts/build-slate.js"
   },
   "dependencies": {
     "@zcatalyst/auth": "1.0.0",
