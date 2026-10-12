@@ -1,0 +1,30 @@
+# Connect this file through Catalyst Pipelines to the GitHub main branch.
+# The official CLI deploys AppSail to DEVELOPMENT. Promote separately to Production.
+version: 1
+pipeline-when:
+  equal:
+    - << event.ref >>
+    - refs/heads/main
+runners:
+  build-machine:
+    config-id: 2
+pipeline-runner: build-machine
+images:
+  node:
+    image: node:22-bookworm
+    auth:
+      username: << env.DOCKER_USERNAME >>
+      password: << env.DOCKER_TOKEN >>
+jobs:
+  verify-and-deploy:
+    steps:
+      - npm ci
+      - npm test
+      - npm run build
+      - npm install -g zcatalyst-cli@1.28.0
+      - node scripts/deploy-catalyst.js
+stages:
+  - name: verify-and-deploy
+    image: node
+    jobs:
+      - verify-and-deploy

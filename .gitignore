@@ -1,0 +1,12 @@
+node_modules/
+.env
+data/
+build/
+reports/
+exports/
+*.log
+.catalystrc
+.env.*
+!.env.example
+gdg-dino-catalyst.zip
+catalyst-debug.log

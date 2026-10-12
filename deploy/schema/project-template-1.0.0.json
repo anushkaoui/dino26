@@ -1,0 +1,457 @@
+{
+  "name": "project-template",
+  "version": "1.0.0",
+  "parameters": {},
+  "components": {
+    "Datastore": [
+      {
+        "type": "table",
+        "name": "DinoEvents",
+        "properties": {
+          "table_name": "DinoEvents"
+        },
+        "dependsOn": []
+      },
+      {
+        "type": "column",
+        "name": "DinoEvents-Key",
+        "properties": {
+          "column_name": "Key",
+          "data_type": "varchar",
+          "is_unique": true,
+          "is_mandatory": true,
+          "search_index_enabled": false,
+          "table_id": "DinoEvents",
+          "table_name": "DinoEvents",
+          "max_length": 150
+        },
+        "dependsOn": [
+          "Datastore.table.DinoEvents"
+        ]
+      },
+      {
+        "type": "column",
+        "name": "DinoEvents-EventKey",
+        "properties": {
+          "column_name": "EventKey",
+          "data_type": "varchar",
+          "is_unique": false,
+          "is_mandatory": true,
+          "search_index_enabled": false,
+          "table_id": "DinoEvents",
+          "table_name": "DinoEvents",
+          "max_length": 40
+        },
+        "dependsOn": [
+          "Datastore.table.DinoEvents"
+        ]
+      },
+      {
+        "type": "column",
+        "name": "DinoEvents-Payload",
+        "properties": {
+          "column_name": "Payload",
+          "data_type": "text",
+          "is_unique": false,
+          "is_mandatory": true,
+          "search_index_enabled": false,
+          "table_id": "DinoEvents",
+          "table_name": "DinoEvents",
+          "max_length": 10000
+        },
+        "dependsOn": [
+          "Datastore.table.DinoEvents"
+        ]
+      },
+      {
+        "type": "tableScope",
+        "name": "DinoEvents-App Administrator",
+        "properties": {
+          "role_name": "App Administrator",
+          "table_scope": "GLOBAL",
+          "type": "App Administrator",
+          "table_name": "DinoEvents"
+        },
+        "dependsOn": [
+          "Datastore.table.DinoEvents"
+        ]
+      },
+      {
+        "type": "tablePermission",
+        "name": "DinoEvents-App Administrator",
+        "properties": {
+          "role_name": "App Administrator",
+          "type": "App Administrator",
+          "table_name": "DinoEvents",
+          "table_permissions": [
+            "SELECT",
+            "UPDATE",
+            "INSERT",
+            "DELETE"
+          ]
+        },
+        "dependsOn": [
+          "Datastore.table.DinoEvents"
+        ]
+      },
+      {
+        "type": "tableScope",
+        "name": "DinoEvents-App User",
+        "properties": {
+          "role_name": "App User",
+          "table_scope": "GLOBAL",
+          "type": "App User",
+          "table_name": "DinoEvents"
+        },
+        "dependsOn": [
+          "Datastore.table.DinoEvents"
+        ]
+      },
+      {
+        "type": "tablePermission",
+        "name": "DinoEvents-App User",
+        "properties": {
+          "role_name": "App User",
+          "type": "App User",
+          "table_name": "DinoEvents",
+          "table_permissions": []
+        },
+        "dependsOn": [
+          "Datastore.table.DinoEvents"
+        ]
+      },
+      {
+        "type": "table",
+        "name": "DinoEntries",
+        "properties": {
+          "table_name": "DinoEntries"
+        },
+        "dependsOn": []
+      },
+      {
+        "type": "column",
+        "name": "DinoEntries-Key",
+        "properties": {
+          "column_name": "Key",
+          "data_type": "varchar",
+          "is_unique": true,
+          "is_mandatory": true,
+          "search_index_enabled": false,
+          "table_id": "DinoEntries",
+          "table_name": "DinoEntries",
+          "max_length": 150
+        },
+        "dependsOn": [
+          "Datastore.table.DinoEntries"
+        ]
+      },
+      {
+        "type": "column",
+        "name": "DinoEntries-EventKey",
+        "properties": {
+          "column_name": "EventKey",
+          "data_type": "varchar",
+          "is_unique": false,
+          "is_mandatory": true,
+          "search_index_enabled": false,
+          "table_id": "DinoEntries",
+          "table_name": "DinoEntries",
+          "max_length": 40
+        },
+        "dependsOn": [
+          "Datastore.table.DinoEntries"
+        ]
+      },
+      {
+        "type": "column",
+        "name": "DinoEntries-Roll",
+        "properties": {
+          "column_name": "Roll",
+          "data_type": "varchar",
+          "is_unique": false,
+          "is_mandatory": true,
+          "search_index_enabled": false,
+          "table_id": "DinoEntries",
+          "table_name": "DinoEntries",
+          "max_length": 8
+        },
+        "dependsOn": [
+          "Datastore.table.DinoEntries"
+        ]
+      },
+      {
+        "type": "column",
+        "name": "DinoEntries-ClaimHash",
+        "properties": {
+          "column_name": "ClaimHash",
+          "data_type": "varchar",
+          "is_unique": false,
+          "is_mandatory": true,
+          "search_index_enabled": false,
+          "table_id": "DinoEntries",
+          "table_name": "DinoEntries",
+          "max_length": 64
+        },
+        "dependsOn": [
+          "Datastore.table.DinoEntries"
+        ]
+      },
+      {
+        "type": "column",
+        "name": "DinoEntries-Payload",
+        "properties": {
+          "column_name": "Payload",
+          "data_type": "text",
+          "is_unique": false,
+          "is_mandatory": true,
+          "search_index_enabled": false,
+          "table_id": "DinoEntries",
+          "table_name": "DinoEntries",
+          "max_length": 10000
+        },
+        "dependsOn": [
+          "Datastore.table.DinoEntries"
+        ]
+      },
+      {
+        "type": "tableScope",
+        "name": "DinoEntries-App Administrator",
+        "properties": {
+          "role_name": "App Administrator",
+          "table_scope": "GLOBAL",
+          "type": "App Administrator",
+          "table_name": "DinoEntries"
+        },
+        "dependsOn": [
+          "Datastore.table.DinoEntries"
+        ]
+      },
+      {
+        "type": "tablePermission",
+        "name": "DinoEntries-App Administrator",
+        "properties": {
+          "role_name": "App Administrator",
+          "type": "App Administrator",
+          "table_name": "DinoEntries",
+          "table_permissions": [
+            "SELECT",
+            "UPDATE",
+            "INSERT",
+            "DELETE"
+          ]
+        },
+        "dependsOn": [
+          "Datastore.table.DinoEntries"
+        ]
+      },
+      {
+        "type": "tableScope",
+        "name": "DinoEntries-App User",
+        "properties": {
+          "role_name": "App User",
+          "table_scope": "GLOBAL",
+          "type": "App User",
+          "table_name": "DinoEntries"
+        },
+        "dependsOn": [
+          "Datastore.table.DinoEntries"
+        ]
+      },
+      {
+        "type": "tablePermission",
+        "name": "DinoEntries-App User",
+        "properties": {
+          "role_name": "App User",
+          "type": "App User",
+          "table_name": "DinoEntries",
+          "table_permissions": []
+        },
+        "dependsOn": [
+          "Datastore.table.DinoEntries"
+        ]
+      },
+      {
+        "type": "table",
+        "name": "DinoCheckpoints",
+        "properties": {
+          "table_name": "DinoCheckpoints"
+        },
+        "dependsOn": []
+      },
+      {
+        "type": "column",
+        "name": "DinoCheckpoints-Key",
+        "properties": {
+          "column_name": "Key",
+          "data_type": "varchar",
+          "is_unique": true,
+          "is_mandatory": true,
+          "search_index_enabled": false,
+          "table_id": "DinoCheckpoints",
+          "table_name": "DinoCheckpoints",
+          "max_length": 150
+        },
+        "dependsOn": [
+          "Datastore.table.DinoCheckpoints"
+        ]
+      },
+      {
+        "type": "column",
+        "name": "DinoCheckpoints-EventKey",
+        "properties": {
+          "column_name": "EventKey",
+          "data_type": "varchar",
+          "is_unique": false,
+          "is_mandatory": true,
+          "search_index_enabled": false,
+          "table_id": "DinoCheckpoints",
+          "table_name": "DinoCheckpoints",
+          "max_length": 40
+        },
+        "dependsOn": [
+          "Datastore.table.DinoCheckpoints"
+        ]
+      },
+      {
+        "type": "column",
+        "name": "DinoCheckpoints-EntryKey",
+        "properties": {
+          "column_name": "EntryKey",
+          "data_type": "varchar",
+          "is_unique": false,
+          "is_mandatory": true,
+          "search_index_enabled": false,
+          "table_id": "DinoCheckpoints",
+          "table_name": "DinoCheckpoints",
+          "max_length": 150
+        },
+        "dependsOn": [
+          "Datastore.table.DinoCheckpoints"
+        ]
+      },
+      {
+        "type": "column",
+        "name": "DinoCheckpoints-Seq",
+        "properties": {
+          "column_name": "Seq",
+          "data_type": "int",
+          "is_unique": false,
+          "is_mandatory": true,
+          "search_index_enabled": false,
+          "table_id": "DinoCheckpoints",
+          "table_name": "DinoCheckpoints"
+        },
+        "dependsOn": [
+          "Datastore.table.DinoCheckpoints"
+        ]
+      },
+      {
+        "type": "column",
+        "name": "DinoCheckpoints-RankValue",
+        "properties": {
+          "column_name": "RankValue",
+          "data_type": "bigint",
+          "is_unique": false,
+          "is_mandatory": true,
+          "search_index_enabled": false,
+          "table_id": "DinoCheckpoints",
+          "table_name": "DinoCheckpoints"
+        },
+        "dependsOn": [
+          "Datastore.table.DinoCheckpoints"
+        ]
+      },
+      {
+        "type": "column",
+        "name": "DinoCheckpoints-Digest",
+        "properties": {
+          "column_name": "Digest",
+          "data_type": "varchar",
+          "is_unique": false,
+          "is_mandatory": true,
+          "search_index_enabled": false,
+          "table_id": "DinoCheckpoints",
+          "table_name": "DinoCheckpoints",
+          "max_length": 64
+        },
+        "dependsOn": [
+          "Datastore.table.DinoCheckpoints"
+        ]
+      },
+      {
+        "type": "column",
+        "name": "DinoCheckpoints-Payload",
+        "properties": {
+          "column_name": "Payload",
+          "data_type": "text",
+          "is_unique": false,
+          "is_mandatory": true,
+          "search_index_enabled": false,
+          "table_id": "DinoCheckpoints",
+          "table_name": "DinoCheckpoints",
+          "max_length": 10000
+        },
+        "dependsOn": [
+          "Datastore.table.DinoCheckpoints"
+        ]
+      },
+      {
+        "type": "tableScope",
+        "name": "DinoCheckpoints-App Administrator",
+        "properties": {
+          "role_name": "App Administrator",
+          "table_scope": "GLOBAL",
+          "type": "App Administrator",
+          "table_name": "DinoCheckpoints"
+        },
+        "dependsOn": [
+          "Datastore.table.DinoCheckpoints"
+        ]
+      },
+      {
+        "type": "tablePermission",
+        "name": "DinoCheckpoints-App Administrator",
+        "properties": {
+          "role_name": "App Administrator",
+          "type": "App Administrator",
+          "table_name": "DinoCheckpoints",
+          "table_permissions": [
+            "SELECT",
+            "UPDATE",
+            "INSERT",
+            "DELETE"
+          ]
+        },
+        "dependsOn": [
+          "Datastore.table.DinoCheckpoints"
+        ]
+      },
+      {
+        "type": "tableScope",
+        "name": "DinoCheckpoints-App User",
+        "properties": {
+          "role_name": "App User",
+          "table_scope": "GLOBAL",
+          "type": "App User",
+          "table_name": "DinoCheckpoints"
+        },
+        "dependsOn": [
+          "Datastore.table.DinoCheckpoints"
+        ]
+      },
+      {
+        "type": "tablePermission",
+        "name": "DinoCheckpoints-App User",
+        "properties": {
+          "role_name": "App User",
+          "type": "App User",
+          "table_name": "DinoCheckpoints",
+          "table_permissions": []
+        },
+        "dependsOn": [
+          "Datastore.table.DinoCheckpoints"
+        ]
+      }
+    ]
+  }
+}

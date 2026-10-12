@@ -1,0 +1,44 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { createApp } from '../server/http.js';
+import { GameService } from '../server/service.js';
+import { MemoryStore } from './helpers.js';
+test('real HTTP: security, cookie, score persistence, frozen export, and outage response', async t => {
+  const store = new MemoryStore(); let now = 100000;
+  const service = new GameService({ secret: 'secret-'.repeat(8), eventKey: 'http', now: () => now });
+  const key = 'organizer-'.repeat(8);
+  const server = createApp({ service, adminKey: key, origin: 'https://game.example', production: true,
+    storeForRequest: async () => store, logger: { error() {} } });
+  await new Promise(r => server.listen(0, '127.0.0.1', r));
+  t.after(() => new Promise(r => server.close(r)));
+  const base = `http://127.0.0.1:${server.address().port}`;
+  const post = (path, data, headers = {}) => fetch(base + path, { method: 'POST', headers: {
+    'Content-Type': 'application/json', 'X-Dino-Request': '1', ...headers }, body: JSON.stringify(data) });
+  let res = await fetch(base + '/'); assert.equal(res.status, 200);
+  assert.ok(res.headers.get('content-security-policy').includes("frame-ancestors 'none'"));
+  assert.ok((await res.text()).includes('Your roll number'));
+  res = await post('/api/admin/schedule', { opensAt: 130000, name: 'HTTP test' }); assert.equal(res.status, 401);
+  res = await post('/api/admin/schedule', { opensAt: 130000, name: 'HTTP test' }, { Authorization: `Bearer ${key}` }); assert.equal(res.status, 200);
+  res = await post('/api/join', { roll: 'HTTP1234', claim: 'a'.repeat(64) }, { Origin: 'https://evil.example' }); assert.equal(res.status, 403);
+  res = await post('/api/join', { roll: 'HTTP1234', claim: 'a'.repeat(64) }); assert.equal(res.status, 200);
+  const cookie = res.headers.get('set-cookie');
+  assert.match(cookie, /HttpOnly/); assert.match(cookie, /SameSite=Strict/); assert.match(cookie, /Secure/);
+  const headers = { Cookie: cookie.split(';')[0] };
+  now = 132100;
+  res = await post('/api/checkpoint', { seq: 0, endFrame: 120, inputs: [[0, 4]] }, headers);
+  assert.equal(res.status, 200); const saved = await res.json(); assert.ok(saved.state.best > 0);
+  res = await post('/api/checkpoint', { seq: 0, endFrame: 120, inputs: [[0, 4]] }, headers); assert.equal(res.status, 200);
+  res = await post('/api/checkpoint', { seq: 0, endFrame: 120, inputs: [] }, headers); assert.equal(res.status, 409);
+  res = await post('/api/checkpoint', { x: 'a'.repeat(9000) }, headers); assert.equal(res.status, 413);
+  res = await post('/api/admin/export', {}, { Authorization: `Bearer ${key}` }); assert.equal(res.status, 404);
+  res = await fetch(base + '/api/admin/export', { headers: { Authorization: `Bearer ${key}` } }); assert.equal(res.status, 409);
+  now = 346001;
+  res = await post('/api/admin/finalize', {}, { Authorization: `Bearer ${key}` }); assert.equal(res.status, 200);
+  res = await fetch(base + '/api/admin/export', { headers: { Authorization: `Bearer ${key}` } });
+  assert.equal(res.status, 200); assert.match(await res.text(), /1,HTTP1234,\d+,\d+/);
+  res = await fetch(base + '/api/leaderboard'); assert.equal((await res.json()).final, true);
+  res = await fetch(base + '/../../.env'); assert.equal(res.status, 404);
+  store.get = async () => { throw new Error('provider outage includes sensitive data'); };
+  res = await fetch(base + '/api/health'); assert.equal(res.status, 503);
+  assert.ok(!(await res.text()).includes('sensitive data'));
+});

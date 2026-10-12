@@ -1,0 +1,22 @@
+{
+  "name": "gdg-dino-round",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node server/main.js",
+    "dev": "node --env-file=.env server/main.js",
+    "test": "node --test --test-concurrency=1 test/*.test.js",
+    "load": "node scripts/load.js",
+    "export": "node scripts/export.js",
+    "build": "node scripts/package.js"
+  },
+  "dependencies": {
+    "@zcatalyst/auth": "1.0.0",
+    "@zcatalyst/datastore": "1.0.0",
+    "qrcode": "1.5.4"
+  }
+}

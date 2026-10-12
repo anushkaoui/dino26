@@ -1,0 +1,9 @@
+{
+  "command": "node server/main.js",
+  "build_path": "./build",
+  "stack": "node22",
+  "env_variables": {},
+  "scripts": {},
+  "raw": {},
+  "catalyst_auth": false
+}
